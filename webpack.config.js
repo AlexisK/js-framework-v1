@@ -52,7 +52,8 @@ module.exports = (process_env) => {
 
     const resolveLoader = {
         alias: {
-            'data-bind-loader': path.join(__dirname, './loaders/data-bind-loader.js')
+            'data-bind-loader': path.join(__dirname, './loaders/data-bind-loader.js'),
+            'support-static-property-loader': path.join(__dirname, './loaders/support-static-property-loader.js')
         }
     };
 
@@ -77,7 +78,8 @@ module.exports = (process_env) => {
             loaders: [
                 // Babel is ES6+ converter to ES5
                 //'babel-loader?presets[]=es2015',
-                'data-bind-loader'
+                'data-bind-loader',
+                'support-static-property-loader'
             ],
             exclude: [/node_modules/, PATH.source('index.js')]
         },
@@ -150,7 +152,7 @@ module.exports = (process_env) => {
         },
         devServer: {
             host: 'localhost',
-            port: 3000,
+            port: 3001,
             //open: true,
             inline: true,
             //historyApiFallback : true,
