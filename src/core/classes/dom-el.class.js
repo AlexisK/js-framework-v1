@@ -18,7 +18,7 @@ export class DomEl {
     }
 
     destroy() {
-        this.node.destroy();
+        this.detach();
         delete this.node;
         delete this.isUsesValueAttrAsText;
     }

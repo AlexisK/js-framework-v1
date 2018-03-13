@@ -1,6 +1,6 @@
 export class Base {
     constructor() {
-        this._provider = this.constructor._providerPass;
+        this._provider = this.constructor._provider;
         this._inject();
     }
     destroy() {};
@@ -13,7 +13,12 @@ export class Base {
     }
 
     _getInjection(key) {
-        if ( !this._provider ) { throw new Error('No local provider for '+this.constructor.name); }
+        if ( !this._provider ) { throw new Error([
+            'No local provider for',
+            key,
+            'in',
+            this.constructor.name
+        ].join(' ')); }
         return this._provider.getInjection(key);
     }
 }
