@@ -1,9 +1,15 @@
+const modulesBuffer = {};
+
 export class Module {
-    constructor(parent) {
-        this.__parentModule = parent;
+    constructor() {
         this.__childModules = [];
         this.__providerStorage = {};
         let classRef = this.constructor;
+
+        if ( classRef.modules ) {
+            classRef.modules.forEach(moduleClass => this.addChildModule(moduleClass));
+        }
+
 
         if ( classRef.provide ) {
             classRef.provide.forEach(cls => {
@@ -22,14 +28,13 @@ export class Module {
     }
 
     destroy() {
-        if ( this.__parentModule ) {
-            this.__parentModule.removeModuleInstance(this);
-            delete this.__parentModule;
-        }
+        this.__childModules.forEach(module => module.destroy());
     }
 
     addChildModule(moduleClass) {
-        this.__childModules.push(new moduleClass(this));
+        let module = modulesBuffer[moduleClass.name] || (modulesBuffer[moduleClass.name] = new moduleClass());
+        this.__childModules.push(module);
+        this.__providerStorage = Object.assign({}, module.__providerStorage, this.__providerStorage);
     }
 
     removeModuleInstance(moduleInst) {
@@ -40,6 +45,6 @@ export class Module {
     }
 
     getInjection(key) {
-        return this.__providerStorage[key] || (this.__parentModule && this.__parentModule.getInjection(key));
+        return this.__providerStorage[key];
     }
 }

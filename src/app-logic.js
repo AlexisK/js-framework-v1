@@ -1,8 +1,8 @@
-import {CoreModule} from "./app_modules/modules";
+import {MainModule} from "./app_modules/modules";
 
 export class AppLogic {
     init() {
         console.log('Init App logic');
-        console.log(new CoreModule());
+        console.log(new MainModule());
     }
 }
