@@ -7,7 +7,11 @@ export class CategoriesPageComponent extends Component {
     constructor(parent) {
         super(parent, 'div');
 
-        this.root.cr('h1').value('Forum Categories');
+        this.root.cr('h1').value('Forum');
+
+        this.root.cr('a').attr({href: '#'}).value('Home');
+
+        this.root.cr('h3').value('Categories:');
 
         this.ForumDataService.categories.forEach(category => {
             this.root.cr('a').attr({href: '#forum/category/'+category.id}).value(category.title)

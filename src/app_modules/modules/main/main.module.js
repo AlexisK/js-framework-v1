@@ -7,7 +7,6 @@ import {MainComponent} from "./main.component";
 export class MainModule extends Module {
     static provide = [DashboardService];
     static modules = [SharedModule];
-    static inject = [DashboardService, StateService];
     static routes = [
         ['', MainComponent]
     ];

@@ -11,8 +11,7 @@ export class CategoryPageComponent extends Component {
 
         this.root.cr('h1').value('Forum Category '+this.category.title);
 
-        this.ForumDataService.categories.forEach(category => {
-            this.root.cr('a').attr({href: '#forum/category/'+category.id}).value(category.title)
-        });
+        this.root.cr('a').attr({href: '#forum/categories'}).value('To categories');
+
     }
 }
