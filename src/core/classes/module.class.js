@@ -68,7 +68,25 @@ export class Module {
         this.__root.attachTo(target);
     }
 
-    renderByPath(prefix = '') {
+    resolvePath(path, pattern) {
+        let variables = [];
+        let newPattern = '^'+pattern.replace('/', '\\/').replace(/:([\w\d-]+)/g, (match, varName) => {
+            variables.push(varName);
+            return '([\\w\\d-]+)'
+        });
+        let match = new RegExp(newPattern).exec(path);
+        if ( match ) {
+            let pathArgs = {};
+            match = match.slice(1);
+            variables.forEach((vName, ind) => {
+                pathArgs[vName] = match[ind];
+            });
+            return pathArgs;
+        }
+        return null;
+    }
+
+    renderByPath(prefix = '', parentArgs = {}) {
         this.clearView();
         prefix = clearPathString(prefix);
         let path = clearPathString(window.location.href.slice(window.location.origin.length));
@@ -78,13 +96,23 @@ export class Module {
         for (let i = 0; i < classRef.routes.length; i++ ) {
             let pathPart = clearPathString([prefix, clearPathString(classRef.routes[i][0])].join('/'));
 
-            if ( path.indexOf(pathPart) === 0 ) {
+            let pathArgs = this.resolvePath(path, pathPart);
+            if ( pathArgs ) {
                 let result = classRef.routes[i][1];
+
                 if ( result._instanceof ===  Module ) {
-                    this.__renderedInstance = [Module, getModule(result).renderByPath(pathPart).attachTo(this.__root)];
+                    this.__renderedInstance = [
+                        Module,
+                        getModule(result).renderByPath(
+                            pathPart,
+                            Object.assign(parentArgs, pathArgs)
+                        ).attachTo(this.__root)
+                    ];
+
                 } else if ( result._instanceof ===  Component ) {
                     result._provider = this;
-                    this.__renderedInstance = [Component, new result(this.__root)];
+                    this.__renderedInstance = [Component, new result(this.__root, pathArgs)];
+
                 } else {
                     if ( result.redirectTo ) {
                         window.location.replace([
@@ -94,6 +122,7 @@ export class Module {
                         ].join('/'))
                     }
                 }
+
                 return this.__root;
             }
         }
