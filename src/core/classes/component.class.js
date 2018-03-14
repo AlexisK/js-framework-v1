@@ -7,7 +7,11 @@ export class Component extends Base {
 
     constructor(parent, tag) {
         super();
-        this.root = new DomEl(tag).attachTo(parent);
+        if ( parent instanceof Component ) {
+            this.root = parent;
+        } else {
+            this.root = new DomEl(tag).attachTo(parent);
+        }
     }
 
     destroy() {

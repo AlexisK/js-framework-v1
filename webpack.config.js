@@ -36,7 +36,7 @@ const proxyRules = [
 
 const sassLoaders = [
     'css-loader',
-    'sass-loader?includePaths[]=' + [PATH.source('app_styles', 'globals')]
+    'sass-loader?includePaths[]=' + [PATH.source('app_styles')]
 ];
 
 // MAIN

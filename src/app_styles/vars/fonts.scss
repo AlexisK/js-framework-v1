@@ -1,0 +1,9 @@
+$font-family-primary: arial, sans-serif;
+$font-family-input: monospace;
+$line-height: 20px;
+
+$font-primary: 14px/#{$line-height} $font-family-primary;
+$font-input: 14px/#{$line-height} $font-family-input;
+$font-button: bold $font-primary;
+$font-button-large: bold 16px/#{$line-height} $font-family-primary;
+$font-title: bold 16px/#{$line-height} $font-family-primary;

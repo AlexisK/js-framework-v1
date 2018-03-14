@@ -1,0 +1,3 @@
+@mixin animate($scope: all, $time: .15s, $func: ease-out) {
+  transition: $scope $time $func;
+}

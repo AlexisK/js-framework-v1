@@ -1,0 +1,33 @@
+@import "app_styles/vars";
+@import "menu";
+
+$padding-text-line: ($header-height - $line-height) / 2;
+
+body {
+  font: $font-primary;
+  background-color: $grey-2;
+}
+
+.app-default-template {
+  background-color: white;
+  color: $grey-dark-3;
+
+  .header {
+    box-sizing: border-box;
+    height: $header-height;
+    padding: $padding-text-line $header-height+$padding-default;
+    background-color: $color-header;
+  }
+
+  .body {
+    padding: 20px;
+
+    a {
+      display: block;
+    }
+  }
+
+  .menu {
+    @include menu;
+  }
+}

@@ -1,0 +1,42 @@
+@import "vars";
+$padding-text-line: ($header-height - $line-height) / 2;
+
+@mixin menu() {
+  position: fixed;
+  top: 0; bottom: 0; left: -$menu-width;
+  box-sizing: border-box;
+  width: $menu-width;
+
+  border-right: 1px solid $grey-3;
+  background-color: white;
+
+  @include animate(transform);
+
+  &.opened {
+    transform: translateX($menu-width);
+  }
+
+  .menu-toggle-button {
+    position: absolute;
+    top: 0; left: 100%;
+    box-sizing: border-box;
+    min-width: $header-height;
+    padding: $padding-text-line - 0.5px;
+    font: $font-button;
+    border-width: 0 1px 1px 0;
+    border-style: solid;
+    border-color: $grey-4;
+    background-color: $color-header;
+  }
+
+  a {
+    display: block;
+    padding: $padding-text-line $padding-default;
+    font: $font-button;
+    @include animate(background);
+
+    &:hover {
+      background-color: $grey-2;
+    }
+  }
+}

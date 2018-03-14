@@ -1,9 +1,12 @@
 export class Base {
     constructor() {
+        this.subscriptions = [];
         this._provider = this.constructor._provider;
         this._inject();
     }
-    destroy() {};
+    destroy() {
+        this.subscriptions.forEach(sbs => sbs.unsubscribe());
+    };
 
     _inject() {
         let classRef = this.constructor;
