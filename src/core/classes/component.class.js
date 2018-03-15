@@ -7,6 +7,7 @@ export class Component extends Base {
 
     constructor(parent, dom) {
         super();
+        this.dom = [];
         let classRef = this.constructor;
 
         if ( classRef.template ) {
@@ -22,6 +23,8 @@ export class Component extends Base {
 
     _destroy() {
         super.destroy();
+        this.dom.forEach(el => el.destroy());
+        delete this.dom;
     }
 
     destroy() {

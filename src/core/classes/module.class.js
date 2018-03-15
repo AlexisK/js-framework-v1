@@ -38,7 +38,7 @@ export class Module {
         this.__childModules = [];
         this.__providerStorage = {};
         this.__root = new DomEl('div');
-        this.__renderedInstance = null;
+        this.__renderedComponent = null;
         let classRef = this.constructor;
 
         if ( classRef.provide ) {
@@ -82,65 +82,61 @@ export class Module {
         this.__root.attachTo(target);
     }
 
-    renderByPath(prefix = '', parentArgs = {}) {
+    renderByPath() {
+        let rules = this._renderByPath();
+        if ( !rules ) { return null; }
+        let [component, args] = rules;
+        if (
+            component.template
+            && this.__renderedComponent
+            && (component.template === this.__renderedComponent.constructor.template)
+        ) {
+            this.__renderedComponent = new component(this.__renderedComponent.destroyAndGetTemplate(), args);
+        } else {
+            if ( this.__renderedComponent ) {
+                this.__renderedComponent.destroy();
+            }
+            this.__renderedComponent = new component(this.__root, args);
+        }
+    }
+
+    _renderByPath(prefix = '', parentArgs = {}) {
         prefix = clearPathString(prefix);
         let path = clearPathString(window.location.href.slice(window.location.origin.length));
 
         let classRef = this.constructor;
-        if ( !classRef.routes ) { return this.__root; }
+        if ( !classRef.routes ) { return null; }
         for (let i = 0; i < classRef.routes.length; i++ ) {
             let pathPart = clearPathString([prefix, clearPathString(classRef.routes[i][0])].join('/'));
-
             let pathArgs = resolvePath(path, pathPart);
             if ( pathArgs ) {
                 let result = classRef.routes[i][1];
 
                 if ( result._class ===  Module ) {
-                    this.clearView();
-                    this.__renderedInstance = [
-                        Module,
-                        getModule(result).renderByPath(
-                            pathPart,
-                            Object.assign(parentArgs, pathArgs)
-                        ).attachTo(this.__root)
-                    ];
+                    return getModule(result)._renderByPath(
+                        pathPart,
+                        Object.assign(parentArgs, pathArgs)
+                    );
 
-                } else if ( result._class ===  Component ) {
+                }
+                if ( result._class ===  Component ) {
                     result._provider = this;
-                    this.__renderedInstance = [
-                        Component,
-                        this.replaceRenderedComponent(result, pathArgs)
-                    ];
+                    return [result, pathArgs]
 
-                } else {
-                    if ( result.redirectTo ) {
-                        window.location.replace([
-                            window.location.origin,
-                            prefix,
-                            clearPathString(result.redirectTo)
-                        ].join('/'))
-                    }
+                }
+                if ( result.redirectTo ) {
+                    window.location.replace([
+                        window.location.origin,
+                        prefix,
+                        clearPathString(result.redirectTo)
+                    ].join('/'));
+                    return null;
                 }
 
-                return this.__root;
+                return null;
             }
         }
-        return this.__root;
-    }
+        return null;
 
-    replaceRenderedComponent(component, args) {
-        this.clearView();
-        return new component(this.__root, args);
-    }
-
-    clearView() {
-        if ( this.__renderedInstance ) {
-            if ( this.__renderedInstance[0] === Component ) {
-                this.__renderedInstance[1].destroy();
-                return this.__renderedInstance = null;
-            }
-            this.__renderedInstance[1].detach();
-            return this.__renderedInstance = null;
-        }
     }
 }

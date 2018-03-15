@@ -9,11 +9,13 @@ export class CategoriesPageComponent extends Component {
     constructor(parent) {
         super(parent);
 
-        this.root.header.cr('h1').value('Forum');
-        this.root.body.cr('h3').value('Categories:');
+        this.dom.push(
+            this.root.header.cr('h1').value('Forum'),
+            this.root.body.cr('h3').value('Categories:')
+        );
 
         this.ForumDataService.categories.forEach(category => {
-            this.root.body.cr('a').attr({href: '#forum/category/'+category.id}).value(category.title)
+            this.dom.push(this.root.body.cr('a').attr({href: '#forum/category/'+category.id}).value(category.title))
         });
     }
 }

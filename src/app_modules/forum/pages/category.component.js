@@ -11,9 +11,10 @@ export class CategoryPageComponent extends Component {
         super(parent);
         this.category = ForumCategories[routeArgs.categoryId];
 
-        this.root.header.cr('h1').value('Forum Category '+this.category.title);
-
-        this.root.menu.cr('a').attr({href: '#forum/categories'}).value('To categories');
+        this.dom.push(
+            this.root.header.cr('h1').value('Forum Category '+this.category.title),
+            this.root.menu.cr('a').attr({href: '#forum/categories'}).value('To categories')
+        );
 
     }
 }
