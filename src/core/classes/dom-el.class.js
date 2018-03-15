@@ -15,9 +15,11 @@ export class DomEl {
     constructor(tag) {
         this.node = document.createElement(tag);
         this.isUsesValueAttrAsText = usesValueAttrAsText[tag.toLowerCase()] || false;
+        this.__subscribedEvents = [];
     }
 
     destroy() {
+        this.__subscribedEvents.forEach(pair => this.node.removeEventListener(pair[0], pair[1]));
         this.detach();
         delete this.node;
         delete this.isUsesValueAttrAsText;
@@ -105,5 +107,17 @@ export class DomEl {
     addEventListener(evName, worker) {
         this.node.addEventListener(evName, worker);
         return this;
+    }
+
+    removeEventListener(key) {
+        for (let i = 0; i < this.__subscribedEvents.length; i++) {
+            let pair = this.__subscribedEvents[i];
+
+            if (pair[0] === key || pair[1] === key ) {
+                this.node.removeEventListener(pair[0], pair[1]);
+                this.__subscribedEvents.splice(i, 1);
+                i--;
+            }
+        }
     }
 }

@@ -10,16 +10,19 @@ export class DefaultTemplateComponent extends Component {
         this.body = this.root.cr('div').cls('body');
         this.footer = this.root.cr('div').cls('footer');
 
-        this.menu = this.root.cr('div').cls('menu');
+        this.menuRoot = this.root.cr('div').cls('menuRoot');
+        this.menuRoot.cr('div').cls('background')
+            .addEventListener('click', ev => this.isOpen$.next(false));
+        this.menu = this.menuRoot.cr('div').cls('menu');
         this.menu.cr('button').cls('menu-toggle-button').value('M')
             .addEventListener('click', () => this.isOpen$.next(!this.isOpen$.data[0]));
 
         this.subscriptions.push(
             this.isOpen$.subscribe(state => {
                 if ( state ) {
-                    this.menu.node.classList.add('opened');
+                    this.menuRoot.node.classList.add('opened');
                 } else {
-                    this.menu.node.classList.remove('opened');
+                    this.menuRoot.node.classList.remove('opened');
                 }
             })
         );

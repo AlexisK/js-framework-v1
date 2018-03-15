@@ -1,19 +1,40 @@
 @import "vars";
 $padding-text-line: ($header-height - $line-height) / 2;
 
-@mixin menu() {
+@mixin menuRoot() {
   position: fixed;
-  top: 0; bottom: 0; left: -$menu-width;
+  top: 0; bottom: 0; left: 0;
   box-sizing: border-box;
-  width: $menu-width;
+  width: 0;
 
-  border-right: 1px solid $grey-3;
-  background-color: white;
 
-  @include animate(transform);
+  .menu {
+    position: absolute;
+    top: 0; bottom: 0; left: -$menu-width;
+    box-sizing: border-box;
+    width: $menu-width;
+
+    border-right: 1px solid $grey-3;
+    background-color: white;
+
+    @include animate(transform);
+  }
+
+  .background {
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    @include animate(background);
+  }
 
   &.opened {
-    transform: translateX($menu-width);
+    width: 100%;
+
+    .menu {
+      transform: translateX($menu-width);
+    }
+    .background {
+      background-color: rgba(white, .5);
+    }
   }
 
   .menu-toggle-button {
@@ -29,14 +50,23 @@ $padding-text-line: ($header-height - $line-height) / 2;
     background-color: $color-header;
   }
 
-  a {
+  a, strong {
     display: block;
     padding: $padding-text-line $padding-default;
     font: $font-button;
+    border-left: 1px solid transparent;
+  }
+
+  a {
     @include animate(background);
 
     &:hover {
       background-color: $grey-2;
+      border-color: $grey-3;
     }
+  }
+
+  .group {
+    padding-left: 20px;
   }
 }

@@ -21,6 +21,11 @@ export class Component extends Base {
         }
     }
 
+    crComponent(component, target = this.root) {
+        component._provider = this._provider;
+        return new component(target);
+    }
+
     _destroy() {
         super.destroy();
         this.dom.forEach(el => el.destroy());

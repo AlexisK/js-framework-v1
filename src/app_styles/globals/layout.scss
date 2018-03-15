@@ -27,7 +27,7 @@ body {
     }
   }
 
-  .menu {
-    @include menu;
+  .menuRoot {
+    @include menuRoot;
   }
 }

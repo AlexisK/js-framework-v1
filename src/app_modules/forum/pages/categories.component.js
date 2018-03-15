@@ -1,6 +1,7 @@
 import {Component} from "core/classes";
 import {ForumDataService} from "../services";
-import {DefaultTemplateComponent} from "../../app/templates/default-template.component";
+import {DefaultTemplateComponent} from "app_modules/app/templates/default-template.component";
+import {ForumMenuComponent} from "../components";
 
 export class CategoriesPageComponent extends Component {
     static inject = [ForumDataService];
@@ -11,7 +12,9 @@ export class CategoriesPageComponent extends Component {
 
         this.dom.push(
             this.root.header.cr('h1').value('Forum'),
-            this.root.body.cr('h3').value('Categories:')
+            this.root.body.cr('h3').value('Categories:'),
+            this.root.menu.cr('strong').value('Forum'),
+            this.crComponent(ForumMenuComponent, this.root.menu)
         );
 
         this.ForumDataService.categories.forEach(category => {
