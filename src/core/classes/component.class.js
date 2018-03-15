@@ -3,19 +3,34 @@ import {Module} from "./module.class";
 import {DomEl} from "./index";
 
 export class Component extends Base {
-    static _instanceof = Component;
+    static _class = Component;
 
-    constructor(parent, tag) {
+    constructor(parent, dom) {
         super();
-        if ( parent instanceof Component ) {
-            this.root = parent;
+        let classRef = this.constructor;
+
+        if ( classRef.template ) {
+            if ( parent instanceof classRef.template ) {
+                this.root = parent;
+            } else {
+                this.root = new classRef.template(parent);
+            }
         } else {
-            this.root = new DomEl(tag).attachTo(parent);
+            this.root = new DomEl(dom).attachTo(parent);
         }
     }
 
-    destroy() {
-        this.root.destroy();
+    _destroy() {
         super.destroy();
+    }
+
+    destroy() {
+        this._destroy();
+        this.root.destroy();
+    }
+
+    destroyAndGetTemplate() {
+        this._destroy();
+        return this.root;
     }
 }

@@ -1,5 +1,4 @@
-import {Component} from "core/classes";
-import {BehaviourStream} from "../../../../core/classes";
+import {Component, BehaviourStream} from "core/classes";
 
 export class DefaultTemplateComponent extends Component {
     constructor(parent) {

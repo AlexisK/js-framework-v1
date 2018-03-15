@@ -1,4 +1,6 @@
 export class Base {
+    static _class = Base;
+
     constructor() {
         this.subscriptions = [];
         this._provider = this.constructor._provider;

@@ -1,7 +1,6 @@
 import {Module} from "core/classes";
 import {DashboardService} from "./services/dashboard.service";
-import {StateService} from "../../shared/services";
-import {SharedModule} from "../../shared/shared.module";
+import {SharedModule} from "../shared/shared.module";
 import {MainComponent} from "./main.component";
 
 export class MainModule extends Module {

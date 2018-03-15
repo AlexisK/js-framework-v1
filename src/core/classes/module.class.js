@@ -1,33 +1,45 @@
 import {DomEl} from "./dom-el.class";
 import {Component} from "./component.class";
 
-
 function clearPathString(path) {
     return path
         .replace(/^\/+/,'')
         .replace(/\/+$/,'');
 }
 
-const modulesBuffer = {};
-function getModule(moduleClass) {
+function resolvePath(path, pattern) {
+    let variables = [];
+    let newPattern = '^'+pattern.replace('/', '\\/').replace(/:([\w\d-]+)/g, (match, varName) => {
+        variables.push(varName);
+        return '([\\w\\d-]+)'
+    });
+    let match = new RegExp(newPattern).exec(path);
+    if ( match ) {
+        let pathArgs = {};
+        match = match.slice(1);
+        variables.forEach((vName, ind) => {
+            pathArgs[vName] = match[ind];
+        });
+        return pathArgs;
+    }
+    return null;
+}
+
+export const modulesBuffer = {};
+export function getModule(moduleClass) {
     return modulesBuffer[moduleClass.name] || (modulesBuffer[moduleClass.name] = new moduleClass());
 }
 
-
 export class Module {
-    static _instanceof = Module;
+    static _class = Module;
 
     constructor() {
+        // console.log('construct module', this.constructor.name);
         this.__childModules = [];
         this.__providerStorage = {};
         this.__root = new DomEl('div');
         this.__renderedInstance = null;
         let classRef = this.constructor;
-
-        if ( classRef.modules ) {
-            classRef.modules.forEach(moduleClass => this.addChildModule(moduleClass));
-        }
-
 
         if ( classRef.provide ) {
             classRef.provide.forEach(cls => {
@@ -38,9 +50,11 @@ export class Module {
         if ( classRef.inject ) {
             classRef.inject.forEach(cls => this[cls.name] = this.getInjection(cls.name));
         }
+
         if ( classRef.modules ) {
             classRef.modules.forEach(moduleClass => this.addChildModule(moduleClass));
         }
+        // console.log('construct module end', this.constructor.name);
     }
 
     destroy() {
@@ -68,26 +82,7 @@ export class Module {
         this.__root.attachTo(target);
     }
 
-    resolvePath(path, pattern) {
-        let variables = [];
-        let newPattern = '^'+pattern.replace('/', '\\/').replace(/:([\w\d-]+)/g, (match, varName) => {
-            variables.push(varName);
-            return '([\\w\\d-]+)'
-        });
-        let match = new RegExp(newPattern).exec(path);
-        if ( match ) {
-            let pathArgs = {};
-            match = match.slice(1);
-            variables.forEach((vName, ind) => {
-                pathArgs[vName] = match[ind];
-            });
-            return pathArgs;
-        }
-        return null;
-    }
-
     renderByPath(prefix = '', parentArgs = {}) {
-        this.clearView();
         prefix = clearPathString(prefix);
         let path = clearPathString(window.location.href.slice(window.location.origin.length));
 
@@ -96,11 +91,12 @@ export class Module {
         for (let i = 0; i < classRef.routes.length; i++ ) {
             let pathPart = clearPathString([prefix, clearPathString(classRef.routes[i][0])].join('/'));
 
-            let pathArgs = this.resolvePath(path, pathPart);
+            let pathArgs = resolvePath(path, pathPart);
             if ( pathArgs ) {
                 let result = classRef.routes[i][1];
 
-                if ( result._instanceof ===  Module ) {
+                if ( result._class ===  Module ) {
+                    this.clearView();
                     this.__renderedInstance = [
                         Module,
                         getModule(result).renderByPath(
@@ -109,9 +105,12 @@ export class Module {
                         ).attachTo(this.__root)
                     ];
 
-                } else if ( result._instanceof ===  Component ) {
+                } else if ( result._class ===  Component ) {
                     result._provider = this;
-                    this.__renderedInstance = [Component, new result(this.__root, pathArgs)];
+                    this.__renderedInstance = [
+                        Component,
+                        this.replaceRenderedComponent(result, pathArgs)
+                    ];
 
                 } else {
                     if ( result.redirectTo ) {
@@ -129,14 +128,19 @@ export class Module {
         return this.__root;
     }
 
+    replaceRenderedComponent(component, args) {
+        this.clearView();
+        return new component(this.__root, args);
+    }
+
     clearView() {
         if ( this.__renderedInstance ) {
             if ( this.__renderedInstance[0] === Component ) {
                 this.__renderedInstance[1].destroy();
-            } else {
-                this.__renderedInstance[1].detach();
+                return this.__renderedInstance = null;
             }
-            this.__renderedInstance = null;
+            this.__renderedInstance[1].detach();
+            return this.__renderedInstance = null;
         }
     }
 }
